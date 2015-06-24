@@ -58,7 +58,6 @@ protected:
 virtual HRESULT _stdcall QueryInterface(_In_ IID const& iid, _COM_Outptr_ void** ret) override \
 { \
 	PrintDebugLog((L"iid: " + GetClsidString(iid)).c_str()); \
-	CheckPointer(ret); \
 	return QueryInterfaceOverride(iid, ret); \
 } \
 virtual ULONG _stdcall AddRef() override \

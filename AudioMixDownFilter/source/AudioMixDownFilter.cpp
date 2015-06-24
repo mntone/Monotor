@@ -35,8 +35,8 @@ HRESULT AudioMixDownFilter::GetInputPreferredMediaType(ULONG position, AM_MEDIA_
 
 	// 5.1 ch only
 	if (position == 0) return CreatePcmAudioType(6, 48000, 16, mediaType);
-	else if (position == 1) return CreatePcmAudioType(6, 48000, 24, mediaType);
-	else if (position == 2) return CreatePcmAudioType(6, 48000, 32, mediaType);
+	if (position == 1) return CreatePcmAudioType(6, 48000, 24, mediaType);
+	if (position == 2) return CreatePcmAudioType(6, 48000, 32, mediaType);
 	return VFW_S_NO_MORE_ITEMS;
 }
 
@@ -83,23 +83,23 @@ HRESULT AudioMixDownFilter::GetOutputPreferredMediaType(ULONG position, AM_MEDIA
 	if (wav.wBitsPerSample == 32)
 	{
 		if (position == 0) return CreatePcmAudioType(2, 48000, 32, mediaType);
-		else if (position == 1)	return CreatePcmAudioType(1, 48000, 32, mediaType);
-		else if (position == 2)	return CreatePcmAudioType(2, 48000, 24, mediaType);
-		else if (position == 3) return CreatePcmAudioType(1, 48000, 24, mediaType);
-		else if (position == 4) return CreatePcmAudioType(2, 48000, 16, mediaType);
-		else if (position == 5) return CreatePcmAudioType(1, 48000, 16, mediaType);
+		if (position == 1) return CreatePcmAudioType(1, 48000, 32, mediaType);
+		if (position == 2) return CreatePcmAudioType(2, 48000, 24, mediaType);
+		if (position == 3) return CreatePcmAudioType(1, 48000, 24, mediaType);
+		if (position == 4) return CreatePcmAudioType(2, 48000, 16, mediaType);
+		if (position == 5) return CreatePcmAudioType(1, 48000, 16, mediaType);
 	}
 	else if (wav.wBitsPerSample == 24)
 	{
 		if (position == 0) return CreatePcmAudioType(2, 48000, 24, mediaType);
-		else if (position == 1) return CreatePcmAudioType(1, 48000, 24, mediaType);
-		else if (position == 2) return CreatePcmAudioType(2, 48000, 16, mediaType);
-		else if (position == 3) return CreatePcmAudioType(1, 48000, 16, mediaType);
+		if (position == 1) return CreatePcmAudioType(1, 48000, 24, mediaType);
+		if (position == 2) return CreatePcmAudioType(2, 48000, 16, mediaType);
+		if (position == 3) return CreatePcmAudioType(1, 48000, 16, mediaType);
 	}
 	else if (wav.wBitsPerSample == 16)
 	{
 		if (position == 0) return CreatePcmAudioType(2, 48000, 16, mediaType);
-		else if (position == 1) return CreatePcmAudioType(1, 48000, 16, mediaType);
+		if (position == 1) return CreatePcmAudioType(1, 48000, 16, mediaType);
 	}
 	return VFW_S_NO_MORE_ITEMS;
 }

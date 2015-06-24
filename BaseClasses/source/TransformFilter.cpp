@@ -19,6 +19,7 @@ TransformFilter::TransformFilter(CLSID const& clsID)
 HRESULT TransformFilter::QueryInterfaceOverride(IID const& iid, void** ret)
 {
 	PrintDebugLog(L"Start");
+	CheckPointer(ret);
 	if (iid == IID_ITransformInputPinProxy)
 	{
 		AddRefInternal();
