@@ -1,0 +1,14 @@
+;============================================================
+;  Copyright (c) 2015- mntone.  All Rights Reserved.
+;============================================================
+
+LIBRARY     AudioMixDownFilter.dll
+
+VERSION		1.00
+
+EXPORTS
+            DllMain					PRIVATE
+            DllRegisterServer		PRIVATE
+            DllUnregisterServer		PRIVATE
+            DllGetClassObject		PRIVATE
+            DllCanUnloadNow			PRIVATE

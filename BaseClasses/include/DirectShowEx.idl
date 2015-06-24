@@ -1,0 +1,54 @@
+cpp_quote("#include <winapifamily.h>")
+
+#pragma region Desktop Family
+cpp_quote("#if WINAPI_FAMILY_PARTITION(WINAPI_PARTITION_DESKTOP)")
+
+import "unknwn.idl";
+
+// Get AM_MEDIA_TYPES
+import "strmif.idl";
+
+[
+	object,
+	uuid(B78AF0FA-D88D-4EA6-BA87-AB8E4FEC4FD1),
+	helpstring("ITransformInputPinProxy Interface"),
+	local
+]
+interface ITransformInputPinProxy : IUnknown
+{
+	HRESULT EndOfStream();
+	HRESULT BeginFlush();
+	HRESULT EndFlush();
+	HRESULT NewSegment(
+		[in, annotation("_In_")] REFERENCE_TIME startTime,
+		[in, annotation("_In_")] REFERENCE_TIME stopTime,
+		[in, annotation("_In_")] double rate);
+
+	HRESULT Receive([in, annotation("_In_")] IMediaSample* mediaSample);
+
+	HRESULT CheckInputPinConnection([in, annotation("_In_")] IPin* receivePin);
+	HRESULT CompleteInputPinConnection([in, annotation("_In_")] IPin* receivePin);
+	HRESULT BreakInputPinConnection();
+	HRESULT CheckInputPinMediaType([in, annotation("_In_")] AM_MEDIA_TYPE const* mediaType);
+	HRESULT SetInputPinMediaType([in, annotation("_In_")] AM_MEDIA_TYPE const* mediaType);
+	HRESULT GetInputPreferredMediaType([in, annotation("_In_")] ULONG position, [in, out, annotation("_Inout_")] AM_MEDIA_TYPE* mediaType);
+}
+
+[
+	object,
+	uuid(C843C3F2-96E9-4F97-A1D4-C8CFAFC25332),
+	helpstring("ITransformOutputPinProxy Interface"),
+	local
+]
+interface ITransformOutputPinProxy : IUnknown
+{
+	HRESULT CheckOutputPinConnection([in, annotation("_In_")] IPin* receivePin);
+	HRESULT CompleteOutputPinConnection([in, annotation("_In_")] IPin* receivePin);
+	HRESULT BreakOutputPinConnection();
+	HRESULT CheckOutputPinMediaType([in, annotation("_In_")] AM_MEDIA_TYPE const* mediaType);
+	HRESULT SetOutputPinMediaType([in, annotation("_In_")] AM_MEDIA_TYPE const* mediaType);
+	HRESULT GetOutputPreferredMediaType([in, annotation("_In_")] ULONG position, [in, out, annotation("_Inout_")] AM_MEDIA_TYPE* mediaType);
+}
+
+cpp_quote("#endif /* WINAPI_FAMILY_PARTITION(WINAPI_PARTITION_DESKTOP) */")
+#pragma endregion

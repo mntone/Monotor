@@ -1,0 +1,156 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hh;hpp;hxx;hm;inl;inc;xsd</Extensions>
+    </Filter>
+    <Filter Include="Header Files\BaseClasses">
+      <UniqueIdentifier>{9668b273-c12a-4b87-9991-80368abe45e8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\BaseClasses">
+      <UniqueIdentifier>{a3ab5c64-801f-4b9a-ac45-0c669310f596}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="source\targetver.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\AudioMixDownFilter.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\AudioMixDownFilterDefine.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\BaseClasses\include\UnknownObject.hpp">
+      <Filter>Header Files\BaseClasses</Filter>
+    </ClInclude>
+    <ClInclude Include="..\BaseClasses\include\BaseFilter.hpp">
+      <Filter>Header Files\BaseClasses</Filter>
+    </ClInclude>
+    <ClInclude Include="..\BaseClasses\include\EnumPins.hpp">
+      <Filter>Header Files\BaseClasses</Filter>
+    </ClInclude>
+    <ClInclude Include="..\BaseClasses\include\BasePin.hpp">
+      <Filter>Header Files\BaseClasses</Filter>
+    </ClInclude>
+    <ClInclude Include="..\BaseClasses\include\BaseInputPin.hpp">
+      <Filter>Header Files\BaseClasses</Filter>
+    </ClInclude>
+    <ClInclude Include="..\BaseClasses\include\BaseOutputPin.hpp">
+      <Filter>Header Files\BaseClasses</Filter>
+    </ClInclude>
+    <ClInclude Include="..\BaseClasses\include\MediaType.hpp">
+      <Filter>Header Files\BaseClasses</Filter>
+    </ClInclude>
+    <ClInclude Include="..\BaseClasses\include\Utilties.hpp">
+      <Filter>Header Files\BaseClasses</Filter>
+    </ClInclude>
+    <ClInclude Include="..\BaseClasses\include\TransformInputPin.hpp">
+      <Filter>Header Files\BaseClasses</Filter>
+    </ClInclude>
+    <ClInclude Include="..\BaseClasses\include\TransformOutputPin.hpp">
+      <Filter>Header Files\BaseClasses</Filter>
+    </ClInclude>
+    <ClInclude Include="..\BaseClasses\include\TransformFilter.hpp">
+      <Filter>Header Files\BaseClasses</Filter>
+    </ClInclude>
+    <ClInclude Include="source\pch.hpp">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\BaseClasses\include\EnumMediaTypes.hpp">
+      <Filter>Header Files\BaseClasses</Filter>
+    </ClInclude>
+    <ClInclude Include="..\BaseClasses\include\RegistoryLibrary.hpp">
+      <Filter>Header Files\BaseClasses</Filter>
+    </ClInclude>
+    <ClInclude Include="..\BaseClasses\include\DllSetup.hpp">
+      <Filter>Header Files\BaseClasses</Filter>
+    </ClInclude>
+    <ClInclude Include="..\BaseClasses\include\int24_t.hpp">
+      <Filter>Header Files\BaseClasses</Filter>
+    </ClInclude>
+    <ClInclude Include="include\AudioMixDownConverter.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="source\AudioMixDownFilter.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="source\pch.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="source\AudioMixDownFilterConfig.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\BaseClasses\source\UnknownObject.cpp">
+      <Filter>Source Files\BaseClasses</Filter>
+    </ClCompile>
+    <ClCompile Include="..\BaseClasses\source\BaseFilter.cpp">
+      <Filter>Source Files\BaseClasses</Filter>
+    </ClCompile>
+    <ClCompile Include="..\BaseClasses\source\EnumPins.cpp">
+      <Filter>Source Files\BaseClasses</Filter>
+    </ClCompile>
+    <ClCompile Include="..\BaseClasses\source\BaseInputPin.cpp">
+      <Filter>Source Files\BaseClasses</Filter>
+    </ClCompile>
+    <ClCompile Include="..\BaseClasses\source\BaseOutputPin.cpp">
+      <Filter>Source Files\BaseClasses</Filter>
+    </ClCompile>
+    <ClCompile Include="..\BaseClasses\source\MediaType.cpp">
+      <Filter>Source Files\BaseClasses</Filter>
+    </ClCompile>
+    <ClCompile Include="..\BaseClasses\source\BasePinConnection.cpp">
+      <Filter>Source Files\BaseClasses</Filter>
+    </ClCompile>
+    <ClCompile Include="..\BaseClasses\source\BasePin.cpp">
+      <Filter>Source Files\BaseClasses</Filter>
+    </ClCompile>
+    <ClCompile Include="..\BaseClasses\source\Utilities.cpp">
+      <Filter>Source Files\BaseClasses</Filter>
+    </ClCompile>
+    <ClCompile Include="..\BaseClasses\source\TransformOutputPin.cpp">
+      <Filter>Source Files\BaseClasses</Filter>
+    </ClCompile>
+    <ClCompile Include="..\BaseClasses\source\TransformInputPin.cpp">
+      <Filter>Source Files\BaseClasses</Filter>
+    </ClCompile>
+    <ClCompile Include="..\BaseClasses\source\TransformFilter.cpp">
+      <Filter>Source Files\BaseClasses</Filter>
+    </ClCompile>
+    <ClCompile Include="..\BaseClasses\source\DirectShowEx.cpp">
+      <Filter>Source Files\BaseClasses</Filter>
+    </ClCompile>
+    <ClCompile Include="..\BaseClasses\source\EnumMediaTypes.cpp">
+      <Filter>Source Files\BaseClasses</Filter>
+    </ClCompile>
+    <ClCompile Include="..\BaseClasses\source\RegistoryLibrary.cpp">
+      <Filter>Source Files\BaseClasses</Filter>
+    </ClCompile>
+    <ClCompile Include="..\BaseClasses\source\DllSetup.cpp">
+      <Filter>Source Files\BaseClasses</Filter>
+    </ClCompile>
+    <ClCompile Include="source\AudioMixDownConverter.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <Midl Include="..\BaseClasses\include\DirectShowEx.idl">
+      <Filter>Header Files\BaseClasses</Filter>
+    </Midl>
+    <Midl Include="include\AudioMixDownFilter.idl">
+      <Filter>Header Files</Filter>
+    </Midl>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="AudioMixDownFilter.def">
+      <Filter>Source Files</Filter>
+    </None>
+  </ItemGroup>
+</Project>

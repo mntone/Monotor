@@ -1,0 +1,33 @@
+cpp_quote("#include <winapifamily.h>")
+
+#pragma region Desktop Family
+cpp_quote("#if WINAPI_FAMILY_PARTITION(WINAPI_PARTITION_DESKTOP)")
+
+import "unknwn.idl";
+
+// Get AM_MEDIA_TYPES
+import "strmif.idl";
+
+[
+	uuid(A815F84A-52F8-4B72-98E2-CDEA1E95324F),
+	version(1.0),
+	helpstring("mntoneÅfs Audio Mix-down Filter Library")
+]
+library AudioMixDownLibrary
+{
+	import "DirectShowEx.idl";
+
+	[
+		uuid(A4DC0E33-43D2-4FBA-BB35-1F59F297F191),
+		helpstring("AudioMixDownFilter Class"),
+	]
+	coclass AudioMixDownFilter
+	{
+		[default] interface IBaseFilter;
+		interface ITransformInputPinProxy;
+		interface ITransformOutputPinProxy;
+	};
+}
+
+cpp_quote("#endif /* WINAPI_FAMILY_PARTITION(WINAPI_PARTITION_DESKTOP) */")
+#pragma endregion

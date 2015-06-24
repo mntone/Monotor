@@ -1,0 +1,10 @@
+.vs/
+bin/
+obj/
+ipch/
+*_h.h
+*_i.c
+*_p.c
+*.sdf
+*.opensdf
+dlldata.c
