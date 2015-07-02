@@ -3,12 +3,12 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 14
 VisualStudioVersion = 14.0.22823.1
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "AudioMixDownFilter", "AudioMixDownFilter\AudioMixDownFilter.vcxproj", "{A714E251-B3AC-489F-944C-2EB686C373AC}"
-EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Monotor.Core", "Monotor.Core\Monotor.Core.vcxproj", "{9A89E4CF-80C6-4F4E-A52F-D62C2ABEF72B}"
 	ProjectSection(ProjectDependencies) = postProject
 		{CD3F7D01-FD27-4CB8-8389-80741F765227} = {CD3F7D01-FD27-4CB8-8389-80741F765227}
 	EndProjectSection
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "AudioMixDownFilter", "AudioMixDownFilter\AudioMixDownFilter.vcxproj", "{A714E251-B3AC-489F-944C-2EB686C373AC}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "MntoneUIFramework", "MntoneUIFramework\MntoneUIFramework\MntoneUIFramework.vcxproj", "{CD3F7D01-FD27-4CB8-8389-80741F765227}"
 EndProject
@@ -20,6 +20,13 @@ Global
 		Release|x86 = Release|x86
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{9A89E4CF-80C6-4F4E-A52F-D62C2ABEF72B}.Debug|x64.ActiveCfg = Debug|x64
+		{9A89E4CF-80C6-4F4E-A52F-D62C2ABEF72B}.Debug|x64.Build.0 = Debug|x64
+		{9A89E4CF-80C6-4F4E-A52F-D62C2ABEF72B}.Debug|x86.ActiveCfg = Debug|Win32
+		{9A89E4CF-80C6-4F4E-A52F-D62C2ABEF72B}.Debug|x86.Build.0 = Debug|Win32
+		{9A89E4CF-80C6-4F4E-A52F-D62C2ABEF72B}.Release|x64.ActiveCfg = Release|Win32
+		{9A89E4CF-80C6-4F4E-A52F-D62C2ABEF72B}.Release|x86.ActiveCfg = Release|Win32
+		{9A89E4CF-80C6-4F4E-A52F-D62C2ABEF72B}.Release|x86.Build.0 = Release|Win32
 		{A714E251-B3AC-489F-944C-2EB686C373AC}.Debug|x64.ActiveCfg = Debug|x64
 		{A714E251-B3AC-489F-944C-2EB686C373AC}.Debug|x64.Build.0 = Debug|x64
 		{A714E251-B3AC-489F-944C-2EB686C373AC}.Debug|x86.ActiveCfg = Debug|Win32
@@ -28,13 +35,6 @@ Global
 		{A714E251-B3AC-489F-944C-2EB686C373AC}.Release|x64.Build.0 = Release|x64
 		{A714E251-B3AC-489F-944C-2EB686C373AC}.Release|x86.ActiveCfg = Release|Win32
 		{A714E251-B3AC-489F-944C-2EB686C373AC}.Release|x86.Build.0 = Release|Win32
-		{9A89E4CF-80C6-4F4E-A52F-D62C2ABEF72B}.Debug|x64.ActiveCfg = Debug|x64
-		{9A89E4CF-80C6-4F4E-A52F-D62C2ABEF72B}.Debug|x64.Build.0 = Debug|x64
-		{9A89E4CF-80C6-4F4E-A52F-D62C2ABEF72B}.Debug|x86.ActiveCfg = Debug|Win32
-		{9A89E4CF-80C6-4F4E-A52F-D62C2ABEF72B}.Debug|x86.Build.0 = Debug|Win32
-		{9A89E4CF-80C6-4F4E-A52F-D62C2ABEF72B}.Release|x64.ActiveCfg = Release|Win32
-		{9A89E4CF-80C6-4F4E-A52F-D62C2ABEF72B}.Release|x86.ActiveCfg = Release|Win32
-		{9A89E4CF-80C6-4F4E-A52F-D62C2ABEF72B}.Release|x86.Build.0 = Release|Win32
 		{CD3F7D01-FD27-4CB8-8389-80741F765227}.Debug|x64.ActiveCfg = Debug|x64
 		{CD3F7D01-FD27-4CB8-8389-80741F765227}.Debug|x64.Build.0 = Debug|x64
 		{CD3F7D01-FD27-4CB8-8389-80741F765227}.Debug|x86.ActiveCfg = Debug|Win32
