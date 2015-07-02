@@ -1,0 +1,3 @@
+[submodule "MntoneUIFramework"]
+	path = MntoneUIFramework
+	url = https://github.com/mntone/MntoneUIFramework.git

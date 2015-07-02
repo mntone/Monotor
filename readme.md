@@ -1,15 +1,25 @@
 # Monotor
 
-This is The next generation DirectShow Viewer/Recorder.
+This is the next generation DirectShow Viewer/Recorder.
+
 
 ## License
 
-These software is under LGPLv3.
+BaseClasses and Audio Mix-down Filter is under LGPLv3.
+
+Monotor is under GPLv3.
+
 
 ## § BaseClasses (DirectShow Filter Support)
 
 I create the BaseClasses for DirectShow with new C++ format.
 
+
 ## § Audio Mix-down Filter (DirectShow Filter Transform)
 
 This filter can tranform 5.1 ch audio into 2 ch audio.
+
+
+## § Monotor (DirectShow Capture Viewer/Recorder)
+
+This is DirectShow viewer and recorder.
