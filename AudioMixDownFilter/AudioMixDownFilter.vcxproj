@@ -105,6 +105,7 @@
     <ClInclude Include="..\BaseClasses\include\DllSetup.hpp" />
     <ClInclude Include="..\BaseClasses\include\EnumMediaTypes.hpp" />
     <ClInclude Include="..\BaseClasses\include\EnumPins.hpp" />
+    <ClInclude Include="..\BaseClasses\include\HResultException.hpp" />
     <ClInclude Include="..\BaseClasses\include\int24_t.hpp" />
     <ClInclude Include="..\BaseClasses\include\MediaType.hpp" />
     <ClInclude Include="..\BaseClasses\include\RegistoryLibrary.hpp" />

@@ -109,6 +109,39 @@ vector<wstring> RegistoryKey::GetValueNames()
 	return ret;
 }
 
+template<>
+wstring RegistoryKey::GetValue<wstring>(wstring name, size_t size) const
+{
+	wstring ret;
+	DWORD actual = size + 1;
+	ret.resize(size + 1);
+	LSTATUS ls = RegQueryValueExW(handle_, name.c_str(), nullptr, nullptr, reinterpret_cast<BYTE*>(&ret[0]), &actual);
+	ret.resize(actual);
+	if (ls != ERROR_SUCCESS) throw HResultException(HRESULT_FROM_WIN32(ls));
+	return ret;
+}
+
+template<>
+uint32_t RegistoryKey::GetValue<uint32_t>(wstring name) const
+{
+	uint32_t ret;
+	LSTATUS ls = RegQueryValueExW(handle_, name.c_str(), nullptr, nullptr, reinterpret_cast<BYTE*>(&ret), nullptr);
+	if (ls != ERROR_SUCCESS) throw HResultException(HRESULT_FROM_WIN32(ls));
+	return ret;
+}
+
+template<>
+vector<uint8_t> RegistoryKey::GetValue<vector<uint8_t>>(wstring name, size_t size) const
+{
+	vector<uint8_t> ret;
+	DWORD actual = size + 1;
+	ret.resize(size + 1);
+	LSTATUS ls = RegQueryValueExW(handle_, name.c_str(), nullptr, nullptr, reinterpret_cast<BYTE*>(ret.data()), &actual);
+	ret.resize(actual);
+	if (ls != ERROR_SUCCESS) throw HResultException(HRESULT_FROM_WIN32(ls));
+	return ret;
+}
+
 void RegistoryKey::SetValue(wstring name, wstring value)
 {
 	LSTATUS ls = RegSetValueExW(handle_, name.c_str(), 0, REG_SZ, reinterpret_cast<BYTE const*>(value.c_str()), sizeof(wchar_t) * value.length());
@@ -117,7 +150,7 @@ void RegistoryKey::SetValue(wstring name, wstring value)
 
 void RegistoryKey::SetValue(wstring name, uint32_t value)
 {
-	LSTATUS ls = RegSetValueExW(handle_, name.c_str(), 0, REG_DWORD, reinterpret_cast<BYTE const*>(&value), sizeof(::std::uint32_t));
+	LSTATUS ls = RegSetValueExW(handle_, name.c_str(), 0, REG_DWORD, reinterpret_cast<BYTE const*>(&value), sizeof(uint32_t));
 	if (ls != ERROR_SUCCESS) throw HResultException(HRESULT_FROM_WIN32(ls));
 }
 

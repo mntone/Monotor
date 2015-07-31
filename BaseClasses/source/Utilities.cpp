@@ -6,7 +6,7 @@
 using namespace std;
 
 #if _DEBUG
-void _stdcall _PrintDebugLog(wchar_t const* message, char const* func, char const* filename, int line)
+void _PrintDebugLog(wchar_t const* message, char const* func, char const* filename, int line)
 {
 	using namespace ::std;
 	using namespace ::std::chrono;
@@ -46,15 +46,15 @@ void _stdcall _PrintDebugLog(wchar_t const* message, char const* func, char cons
 }
 #endif
 
-wstring _stdcall GetClsidString(CLSID clsid)
+wstring GetGuidString(GUID guid)
 {
 	OLECHAR buffer[CHARS_IN_GUID];
-	HRESULT hr = StringFromGUID2(clsid, buffer, CHARS_IN_GUID);
+	HRESULT hr = StringFromGUID2(guid, buffer, CHARS_IN_GUID);
 	assert(hr);
-	return wstring(buffer);
+	return ::std::wstring(buffer);
 }
 
-wstring _stdcall GetAssemblyName(HINSTANCE hinstance)
+wstring GetAssemblyName(HINSTANCE hinstance)
 {
 	wchar_t buffer[512];
 	DWORD length = GetModuleFileNameW(hinstance, buffer, sizeof(buffer));
@@ -93,7 +93,7 @@ extern "C" {
 
 	HRESULT _stdcall SetupRegisterServer(CLSID clsid, wstring description, wstring filename, wstring threadingModel, wstring serverType)
 	{
-		auto clsidString = GetClsidString(clsid);
+		auto clsidString = GetGuidString(clsid);
 		try
 		{
 			auto classesRootRegistory = Registory::ClassesRoot();
@@ -114,7 +114,7 @@ extern "C" {
 
 	HRESULT _stdcall SetupUnregisterServer(CLSID clsid)
 	{
-		auto clsidString = GetClsidString(clsid);
+		auto clsidString = GetGuidString(clsid);
 		try
 		{
 			auto classesRootRegistory = Registory::ClassesRoot();

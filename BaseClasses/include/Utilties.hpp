@@ -1,14 +1,16 @@
 #pragma once
 
-extern "C" void _stdcall _PrintDebugLog(wchar_t const* message, char const* func, char const* filename, int line);
+#define CheckPointer(__TARGET__) if ((__TARGET__) == nullptr) return E_POINTER;
+
+extern "C" void _PrintDebugLog(wchar_t const* message, char const* func, char const* filename, int line);
 #if _DEBUG
 #define PrintDebugLog(__MESSAGE__) _PrintDebugLog(__MESSAGE__, __FUNCSIG__, __FILE__, __LINE__)
 #else
 #define PrintDebugLog(__MESSAGE__) 0
 #endif
 
-::std::wstring _stdcall GetClsidString(CLSID clsid);
-::std::wstring _stdcall GetAssemblyName(HINSTANCE hinstance);
+::std::wstring GetGuidString(GUID guid);
+::std::wstring GetAssemblyName(HINSTANCE hinstance);
 
 extern "C" {
 

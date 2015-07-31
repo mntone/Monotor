@@ -24,9 +24,7 @@ AudioMixDownFilter::AudioMixDownFilter(ClassUnloadContext ctx)
 	, inputBit_(0)
 	, outputBit_(0)
 	, outputChannel_(0)
-{
-	name_ = NAME_AudioMixDownFilter;
-}
+{ }
 
 HRESULT AudioMixDownFilter::GetInputPreferredMediaType(ULONG position, AM_MEDIA_TYPE* mediaType)
 {

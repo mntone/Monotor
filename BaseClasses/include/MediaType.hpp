@@ -4,47 +4,60 @@ class MediaType final
 {
 public:
 	MediaType();
-	MediaType(MediaType&&) = default;
+	MediaType(MediaType const& other);
+	MediaType(MediaType&&);
 	~MediaType();
 
-	MediaType& operator=(MediaType&&) = default;
+	MediaType& operator=(MediaType const& other);
+	MediaType& operator=(MediaType&&);
 
-	HRESULT _stdcall Initialize();
-	HRESULT _stdcall Set(AM_MEDIA_TYPE const& otherMediaType);
-	HRESULT _stdcall Set(MediaType const& otherMediaType);
+	HRESULT Initialize() noexcept;
+	HRESULT Set(AM_MEDIA_TYPE const& other) noexcept;
+	HRESULT Set(AM_MEDIA_TYPE&& other) noexcept;
+	HRESULT Set(MediaType const& other) noexcept;
 
-	HRESULT _stdcall CopyTo(AM_MEDIA_TYPE& otherMediaType) const;
-	HRESULT _stdcall CopyTo(MediaType& otherMediaType) const;
+	HRESULT CopyTo(AM_MEDIA_TYPE& otherMediaType) const noexcept;
+	HRESULT CopyTo(MediaType& otherMediaType) const noexcept;
 
-	bool MatchesPartial(AM_MEDIA_TYPE const& otherMediaType) const;
+	bool MatchesPartial(AM_MEDIA_TYPE const& otherMediaType) const noexcept;
 
-	bool IsPartiallySpecified() const { return mt_->majortype == GUID_NULL || mt_->subtype == GUID_NULL || mt_->formattype == GUID_NULL; }
-	bool IsPcmAudio() const
+	bool IsPartiallySpecified() const noexcept { return mt_->majortype == GUID_NULL || mt_->subtype == GUID_NULL || mt_->formattype == GUID_NULL; }
+	bool IsVideo() const noexcept { return mt_->majortype == MEDIATYPE_Video; }
+	bool IsAudio() const noexcept { return mt_->majortype == MEDIATYPE_Audio; }
+	bool IsPcmAudio() const noexcept
 	{
-		return mt_->majortype == MEDIATYPE_Audio
+		return IsAudio()
 			&& mt_->subtype == MEDIASUBTYPE_PCM
-			&& mt_->formattype == FORMAT_WaveFormatEx
-			&& mt_->cbFormat == sizeof(WAVEFORMATEX)
-			&& mt_->pbFormat != nullptr;
+			&& IsWaveFormatEx()
+			&& mt_->pbFormat != nullptr
+			&& AsWaveFormatEx().wFormatTag == WAVE_FORMAT_PCM;
 	}
 
-	bool IsFixedSize() const { return mt_->bFixedSizeSamples == TRUE; }
+	bool IsFixedSize() const noexcept { return mt_->bFixedSizeSamples == TRUE; }
 
-	WAVEFORMATEX& AsWaveFormatEx() { return *reinterpret_cast<WAVEFORMATEX*>(mt_->pbFormat); }
-	WAVEFORMATEX const& AsWaveFormatEx() const { return *reinterpret_cast<WAVEFORMATEX const*>(mt_->pbFormat); }
+	bool IsVideoInfoHeader() const noexcept { return mt_->formattype == FORMAT_VideoInfo && mt_->cbFormat >= sizeof(VIDEOINFOHEADER); }
+	VIDEOINFOHEADER& AsVideoInfoHeader() noexcept { return *reinterpret_cast<VIDEOINFOHEADER*>(mt_->pbFormat); }
+	VIDEOINFOHEADER const& AsVideoInfoHeader() const noexcept { return *reinterpret_cast<VIDEOINFOHEADER const*>(mt_->pbFormat); }
 
-	GUID const& Type() const { return mt_->majortype; }
-	void SetType(GUID const& value) { mt_->majortype = value; }
+	bool IsVideoInfoHeader2() const noexcept { return mt_->formattype == FORMAT_VideoInfo2 && mt_->cbFormat >= sizeof(VIDEOINFOHEADER2); }
+	VIDEOINFOHEADER2& AsVideoInfoHeader2() noexcept { return *reinterpret_cast<VIDEOINFOHEADER2*>(mt_->pbFormat); }
+	VIDEOINFOHEADER2 const& AsVideoInfoHeader2() const noexcept { return *reinterpret_cast<VIDEOINFOHEADER2 const*>(mt_->pbFormat); }
 
-	GUID const& SubType() const { return mt_->subtype; }
-	void SetSubType(GUID const& value) { mt_->subtype = value; }
+	bool IsWaveFormatEx() const noexcept { return mt_->formattype == FORMAT_WaveFormatEx && mt_->cbFormat == sizeof(WAVEFORMATEX); }
+	WAVEFORMATEX& AsWaveFormatEx() noexcept { return *reinterpret_cast<WAVEFORMATEX*>(mt_->pbFormat); }
+	WAVEFORMATEX const& AsWaveFormatEx() const noexcept { return *reinterpret_cast<WAVEFORMATEX const*>(mt_->pbFormat); }
 
-	static HRESULT _stdcall CreateInstance(_Out_ MediaType** ret);
+	GUID const& Type() const noexcept { return mt_->majortype; }
+	void SetType(GUID const& value) noexcept { mt_->majortype = value; }
 
-private:
-	MediaType(MediaType const&) = delete;
+	GUID const& SubType() const noexcept { return mt_->subtype; }
+	void SetSubType(GUID const& value) noexcept { mt_->subtype = value; }
 
-	MediaType& operator=(MediaType const&) = delete;
+	::std::wstring SubTypeAsString() const noexcept;
+
+	::std::wstring GetFourCC() const noexcept;
+
+	static HRESULT CreateInstance(_Out_ MediaType** ret) noexcept;
 
 public:
 	AM_MEDIA_TYPE* mt_;
@@ -53,6 +66,10 @@ public:
 extern "C" {
 	AM_MEDIA_TYPE* _stdcall CreateMediaType();
 	HRESULT _stdcall InitializeMediaType(_In_ AM_MEDIA_TYPE& mediaType);
+	HRESULT _stdcall CreateMjpegVideoType(_In_ WORD height, _In_ WORD width, _In_ float framerate, _Outptr_opt_ AM_MEDIA_TYPE* mediaType);
+	HRESULT _stdcall CreateMjpegVideoType2(_Outptr_opt_ AM_MEDIA_TYPE* mediaType);
+	HRESULT _stdcall CreateRgbVideoType(_In_ WORD height, _In_ WORD width, _In_ WORD bits, _In_ float framerate, _Outptr_opt_ AM_MEDIA_TYPE* mediaType);
+	HRESULT _stdcall CreateRgbVideoType2(_Outptr_opt_ AM_MEDIA_TYPE* mediaType);
 	HRESULT _stdcall CreatePcmAudioType(_In_ WORD channel, _In_ DWORD sampleRate, _In_ WORD bits, _Outptr_opt_ AM_MEDIA_TYPE* mediaType);
 	HRESULT _stdcall CopyMediaType(_In_ AM_MEDIA_TYPE const& source, _Out_ AM_MEDIA_TYPE& target);
 	void _stdcall DeleteMediaType(_Inout_ AM_MEDIA_TYPE& mediaType);

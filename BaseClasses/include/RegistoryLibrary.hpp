@@ -1,24 +1,5 @@
 #pragma once
-
-class HResultException final
-{
-public:
-	HResultException(HRESULT hr)
-		: hresult_(hr)
-	{ }
-
-	HResultException(HRESULT hr, ::std::wstring message)
-		: hresult_(hr)
-		, message_(message)
-	{ }
-
-	HRESULT HResult() const { return hresult_; }
-	::std::wstring Message() const { return message_; }
-
-private:
-	HRESULT hresult_;
-	::std::wstring message_;
-};
+#include "HResultException.hpp"
 
 enum class RegistoryOptions
 {
@@ -44,6 +25,10 @@ public:
 	void DeleteSubKeyTree(::std::wstring subkey, bool happenException = true);
 	::std::vector<::std::wstring> GetSubKeyNames();
 
+	template<typename T> auto GetValue(::std::wstring name, ::std::size_t size = 256) const -> typename ::std::enable_if<::std::is_same<::std::wstring, T>::value, T>::type;
+	template<typename T> auto GetValue(::std::wstring name) const -> typename ::std::enable_if<::std::is_same<::std::uint32_t, T>::value, T>::type;
+	template<typename T> auto GetValue(::std::wstring name, ::std::size_t size = 256) const -> typename ::std::enable_if<::std::is_same<::std::vector<::std::uint8_t>, T>::value, T>::type;
+
 	::std::vector<::std::wstring> GetValueNames();
 	void SetValue(::std::wstring name, ::std::wstring value);
 	void SetValue(::std::wstring name, ::std::uint32_t value);
@@ -68,6 +53,10 @@ private:
 	HKEY handle_;
 	::std::wstring name_;
 };
+
+template<> ::std::wstring RegistoryKey::GetValue<::std::wstring>(::std::wstring name, ::std::size_t) const;
+template<> ::std::uint32_t RegistoryKey::GetValue<::std::uint32_t>(::std::wstring name) const;
+template<> ::std::vector<::std::uint8_t> RegistoryKey::GetValue<::std::vector<::std::uint8_t>>(::std::wstring name, ::std::size_t size) const;
 
 class Registory final
 {

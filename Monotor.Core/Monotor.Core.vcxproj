@@ -62,7 +62,7 @@
       <PreprocessorDefinitions>WIN32;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
       <PrecompiledHeaderFile>pch.hpp</PrecompiledHeaderFile>
-      <AdditionalIncludeDirectories>$(ProjectDir)include\;$(ProjectDir)..\MntoneUIFramework\MntoneUIFramework\include\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)include\;$(ProjectDir)..\BaseClasses\include\;$(ProjectDir)..\MntoneUIFramework\MntoneUIFramework\include\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <FloatingPointModel>Fast</FloatingPointModel>
     </ClCompile>
     <Link>
@@ -94,19 +94,49 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="header\DebugWindow.hpp" />
-    <ClInclude Include="header\EvrPanel.h" />
-    <ClInclude Include="header\Monotor.Core.h" />
-    <ClInclude Include="header\pch.hpp" />
-    <ClInclude Include="header\targetver.h" />
+    <ClInclude Include="..\BaseClasses\include\HResultException.hpp" />
+    <ClInclude Include="..\BaseClasses\include\MediaType.hpp" />
+    <ClInclude Include="include\AppContext.hpp" />
+    <ClInclude Include="include\AppException.hpp" />
+    <ClInclude Include="include\ComInitializeWrapper.hpp" />
+    <ClInclude Include="include\dbgstring.hpp" />
+    <ClInclude Include="include\DebugWindow.hpp" />
+    <ClInclude Include="include\DeviceEnumerator.hpp" />
+    <ClInclude Include="include\DirectShowHelper.hpp" />
+    <ClInclude Include="include\EvrPanel.h" />
+    <ClInclude Include="include\EvrPanel.hpp" />
+    <ClInclude Include="include\FilterProxy.hpp" />
+    <ClInclude Include="include\GraphBuilder.hpp" />
+    <ClInclude Include="include\GraphBuilderProxy.hpp" />
+    <ClInclude Include="include\MediaControlProxy.hpp" />
+    <ClInclude Include="include\Monotor.Core.h" />
+    <ClInclude Include="include\pch.hpp" />
+    <ClInclude Include="include\PinProxy.hpp" />
+    <ClInclude Include="include\RunningObjectTableRegistrar.hpp" />
+    <ClInclude Include="include\targetver.h" />
+    <ClInclude Include="include\targetver.hpp" />
+    <ClInclude Include="include\TextUtilities.hpp" />
+    <ClInclude Include="include\Variant.hpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="..\BaseClasses\source\MediaType.cpp" />
+    <ClCompile Include="source\AppContext.cpp" />
+    <ClCompile Include="source\ComInitializeWrapper.cpp" />
+    <ClCompile Include="source\dbgstring.cpp" />
     <ClCompile Include="source\DebugWindow.cpp" />
+    <ClCompile Include="source\DeviceEnumerator.cpp" />
     <ClCompile Include="source\EvrPanel.cpp" />
+    <ClCompile Include="source\FilterProxy.cpp" />
+    <ClCompile Include="source\GraphBuilder.cpp" />
+    <ClCompile Include="source\GraphBuilderProxy.cpp" />
     <ClCompile Include="source\main.cpp" />
+    <ClCompile Include="source\MediaControlProxy.cpp" />
     <ClCompile Include="source\pch.cpp">
       <PrecompiledHeader>Create</PrecompiledHeader>
     </ClCompile>
+    <ClCompile Include="source\PinProxy.cpp" />
+    <ClCompile Include="source\RunningObjectTableRegistrar.cpp" />
+    <ClCompile Include="source\Variant.cpp" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="asset\Monotor.Core.ico" />

@@ -19,5 +19,3 @@
 #include <dshow.h>
 
 #include "Utilties.hpp"
-
-#define CheckPointer(__TARGET__) if ((__TARGET__) == nullptr) return E_POINTER;
