@@ -94,6 +94,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="..\BaseClasses\include\ExtendedGuid.hpp" />
     <ClInclude Include="..\BaseClasses\include\HResultException.hpp" />
     <ClInclude Include="..\BaseClasses\include\MediaType.hpp" />
     <ClInclude Include="include\AppContext.hpp" />
@@ -105,6 +106,7 @@
     <ClInclude Include="include\DirectShowHelper.hpp" />
     <ClInclude Include="include\EvrPanel.h" />
     <ClInclude Include="include\EvrPanel.hpp" />
+    <ClInclude Include="include\FilterEnumerator.hpp" />
     <ClInclude Include="include\FilterProxy.hpp" />
     <ClInclude Include="include\GraphBuilder.hpp" />
     <ClInclude Include="include\GraphBuilderProxy.hpp" />
@@ -119,13 +121,16 @@
     <ClInclude Include="include\Variant.hpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="..\BaseClasses\source\ExtendedGuid.cpp" />
     <ClCompile Include="..\BaseClasses\source\MediaType.cpp" />
     <ClCompile Include="source\AppContext.cpp" />
     <ClCompile Include="source\ComInitializeWrapper.cpp" />
     <ClCompile Include="source\dbgstring.cpp" />
     <ClCompile Include="source\DebugWindow.cpp" />
     <ClCompile Include="source\DeviceEnumerator.cpp" />
+    <ClCompile Include="source\DirectShowHelper.cpp" />
     <ClCompile Include="source\EvrPanel.cpp" />
+    <ClCompile Include="source\FilterEnumerator.cpp" />
     <ClCompile Include="source\FilterProxy.cpp" />
     <ClCompile Include="source\GraphBuilder.cpp" />
     <ClCompile Include="source\GraphBuilderProxy.cpp" />

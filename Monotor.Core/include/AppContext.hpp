@@ -59,6 +59,18 @@ public:
 	float GetFramerate() const noexcept { return framerate_; }
 	void SetFramerate(float value) noexcept { framerate_ = value; }
 
+	char const* GetFourCC() const noexcept { return fourcc_; }
+	void SetFourCC(char const* value) noexcept { memcpy(fourcc_, value, sizeof(char) * 4); }
+
+	::std::int16_t GetChannel() const noexcept { return channel_; }
+	void SetChannel(::std::int16_t value) noexcept { channel_ = value; }
+
+	::std::int32_t GetSampleRate() const noexcept { return sampleRate_; }
+	void SetSampleRate(::std::int32_t value) noexcept { sampleRate_ = value; }
+
+	::std::int16_t GetAudioBit() const noexcept { return audioBit_; }
+	void SetAudioBit(::std::int16_t value) noexcept { audioBit_ = value; }
+
 	::Microsoft::WRL::ComPtr<IMFVideoDisplayControl> GetVideoDisplayControl() const noexcept { return videoDisplayControl_; }
 
 private:
@@ -71,6 +83,11 @@ private:
 	::std::int8_t bit_;
 	::std::int16_t height_, width_, aspectY_, aspectX_;
 	float framerate_;
+	char fourcc_[5];
+
+	::std::int16_t channel_;
+	::std::int32_t sampleRate_;
+	::std::int16_t audioBit_;
 
 	::Microsoft::WRL::ComPtr<IMFVideoDisplayControl> videoDisplayControl_;
 	::std::unique_ptr<GraphBuilder> builder_;

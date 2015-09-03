@@ -1,5 +1,5 @@
 #include "pch.hpp"
-#include "DeviceEnumerator.hpp"
+#include "FilterEnumerator.hpp"
 
 #include "HResultException.hpp"
 #include "Variant.hpp"
@@ -9,19 +9,45 @@ using namespace std;
 using namespace Microsoft::WRL;
 using namespace Mntone::DirectShowSupport;
 
-DeviceEnumerator::DeviceEnumerator()
+FilterEnumerator::FilterEnumerator()
+	: majorType_(GUID_NULL)
+	, inputMinorType_(GUID_NULL)
+	, outputMinorType_(GUID_NULL)
 {
-	ComPtr<ICreateDevEnum> devEnum;
-	CreateSystemDeviceEnum(&devEnum);
+	ComPtr<IFilterMapper2> filterMapper;
+	CreateFilterMapper(&filterMapper);
 
-	HRESULT hr = devEnum.CopyTo(&devEnum_);
+	HRESULT hr = filterMapper.CopyTo(&filterMapper_);
 	if (FAILED(hr)) throw HResultException(hr);
 }
 
-vector<wstring> DeviceEnumerator::GetDeviceNamesFromCategory(CLSID const& category)
+vector<wstring> FilterEnumerator::GetDeviceNames()
 {
+	GUID inputTypes[2];
+	inputTypes[0] = majorType_;
+	inputTypes[1] = inputMinorType_;
+
+	GUID outputTypes[2];
+	outputTypes[0] = majorType_;
+	outputTypes[1] = outputMinorType_;
+
 	ComPtr<IEnumMoniker> enumMoniker;
-	HRESULT hr = devEnum_->CreateClassEnumerator(category, &enumMoniker, 0);
+	HRESULT hr = filterMapper_->EnumMatchingFilters(
+		&enumMoniker,
+		0,
+		TRUE,
+		MERIT_DO_NOT_USE,
+		TRUE,
+		1,
+		inputTypes,
+		nullptr,
+		nullptr,
+		FALSE,
+		TRUE,
+		1,
+		outputTypes,
+		nullptr,
+		nullptr);
 	if (FAILED(hr)) throw HResultException(hr);
 
 	vector<wstring> deciceInfo;
@@ -41,21 +67,34 @@ vector<wstring> DeviceEnumerator::GetDeviceNamesFromCategory(CLSID const& catego
 	return move(deciceInfo);
 }
 
-vector<wstring> DeviceEnumerator::GetVideoInputDeviceNames()
+HRESULT FilterEnumerator::TryGetDeviceMoniker(wstring deviceName, IMoniker** moniker) noexcept
 {
-	return GetDeviceNamesFromCategory(CLSID_VideoInputDeviceCategory);
-}
+	GUID inputTypes[2];
+	inputTypes[0] = majorType_;
+	inputTypes[1] = inputMinorType_;
 
-vector<wstring> DeviceEnumerator::GetAudioInputDeviceNames()
-{
-	return GetDeviceNamesFromCategory(CLSID_AudioInputDeviceCategory);
-}
+	GUID outputTypes[2];
+	outputTypes[0] = majorType_;
+	outputTypes[1] = outputMinorType_;
 
-HRESULT DeviceEnumerator::TryGetDeviceMoniker(CLSID const& category, wstring deviceName, IMoniker** moniker) noexcept
-{
 	ComPtr<IEnumMoniker> enumMoniker;
-	HRESULT hr = devEnum_->CreateClassEnumerator(category, &enumMoniker, 0);
-	if (FAILED(hr)) return hr;
+	HRESULT hr = filterMapper_->EnumMatchingFilters(
+		&enumMoniker,
+		0,
+		TRUE,
+		MERIT_DO_NOT_USE,
+		TRUE,
+		1,
+		inputTypes,
+		nullptr,
+		nullptr,
+		FALSE,
+		TRUE,
+		1,
+		outputTypes,
+		nullptr,
+		nullptr);
+	if (FAILED(hr)) throw HResultException(hr);
 
 	ComPtr<IMoniker> localMoniker;
 	while ((hr = enumMoniker->Next(1, &localMoniker, nullptr)) != S_FALSE)
@@ -75,14 +114,4 @@ HRESULT DeviceEnumerator::TryGetDeviceMoniker(CLSID const& category, wstring dev
 		}
 	}
 	return E_FAIL;
-}
-
-HRESULT DeviceEnumerator::TryGetVideoInputDeviceMoniker(wstring deviceName, IMoniker** moniker) noexcept
-{
-	return TryGetDeviceMoniker(CLSID_VideoInputDeviceCategory, deviceName, moniker);
-}
-
-HRESULT DeviceEnumerator::TryGetAudioInputDeviceMoniker(wstring deviceName, IMoniker** moniker) noexcept
-{
-	return TryGetDeviceMoniker(CLSID_AudioInputDeviceCategory, deviceName, moniker);
 }

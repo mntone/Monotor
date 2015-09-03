@@ -34,27 +34,51 @@ void AppContext::ChangingDevice()
 
 void AppContext::Start()
 {
+	HRESULT hr = S_OK;
+
 	if (none_of(videoDevices_.cbegin(), videoDevices_.cend(), [=](wstring name) { return name == selectedVideoDevice_; }))
 	{
 		throw AppException(L"Cannot find video device.");
 	}
-	//if (none_of(audioDevices_.cbegin(), audioDevices_.cend(), [=](wstring name) { return name == selectedAudioDevice_; }))
-	//{
-	//	throw AppException(L"Cannot find audio device.");
-	//}
 
 	MediaType videoMediaType;
-	HRESULT hr = CreateMjpegVideoType(height_, width_, framerate_, videoMediaType.mt_);
+	if (memcmp(fourcc_, "MJPG", 4) == 0)
+	{
+		hr = CreateMjpegVideoType(height_, width_, framerate_, videoMediaType.mt_);
+	}	
+	else if (memcmp(fourcc_, "YUY2", 4) == 0 || memcmp(fourcc_, "UYVY", 4) == 0 || memcmp(fourcc_, "HDYC", 4) == 0)
+	{
+		hr = CreateYuvVideoType(height_, width_, framerate_, fourcc_, videoMediaType.mt_);
+	}
+	else
+	{
+		throw AppException(L"Unknown format.");
+	}
 	if (FAILED(hr)) throw HResultException(hr);
+
+	MediaType audioMediaType;
+	bool isAudioEnabled = false;
+	if (any_of(audioDevices_.cbegin(), audioDevices_.cend(), [=](wstring name) { return name == selectedAudioDevice_; }))
+	{
+		hr = CreatePcmAudioType(channel_, sampleRate_, audioBit_, audioMediaType.mt_);
+		if (SUCCEEDED(hr))
+		{
+			isAudioEnabled = true;
+		}
+	}
 
 	builder_ = make_unique<GraphBuilder>();
 	try
 	{
-		auto rendererFilter = builder_->ConnectForVideo(selectedVideoDevice_, videoMediaType);
+		auto videoRendererFilter = builder_->ConnectForVideo(selectedVideoDevice_, videoMediaType);
+		if (isAudioEnabled)
+		{
+			auto audioRendererFilter = builder_->ConnectForAudio(selectedAudioDevice_, audioMediaType);
+		}
 		builder_->Run();
 
 		ComPtr<IMFVideoDisplayControl> videoDisplayControl;
-		DirectShowSupport::GetVideoDisplayControl(rendererFilter, &videoDisplayControl);
+		DirectShowSupport::GetVideoDisplayControl(videoRendererFilter, &videoDisplayControl);
 
 		hr = videoDisplayControl.CopyTo(&videoDisplayControl_);
 		if (FAILED(hr)) throw HResultException(hr);

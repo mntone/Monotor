@@ -17,7 +17,7 @@ public:
 	HRESULT TryGetAudioInputDeviceMoniker(::std::wstring deviceName, IMoniker** moniker) noexcept;
 
 private:
-	::Microsoft::WRL::ComPtr<ICreateDevEnum> dev_enum_;
+	::Microsoft::WRL::ComPtr<ICreateDevEnum> devEnum_;
 };
 
 }

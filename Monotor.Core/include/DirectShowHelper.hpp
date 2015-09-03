@@ -4,6 +4,8 @@
 namespace Mntone {
 namespace DirectShowSupport {
 
+extern wchar_t const* constant_friendly_name;
+
 inline void CreateGraphBuilder(IGraphBuilder** graphBuilder)
 {
 	HRESULT hr = CoCreateInstance(CLSID_FilterGraph, nullptr, CLSCTX_INPROC, IID_IGraphBuilder, reinterpret_cast<void**>(graphBuilder));
@@ -13,6 +15,12 @@ inline void CreateGraphBuilder(IGraphBuilder** graphBuilder)
 inline void CreateSystemDeviceEnum(ICreateDevEnum** systemDeviceEnum)
 {
 	HRESULT hr = CoCreateInstance(CLSID_SystemDeviceEnum, nullptr, CLSCTX_INPROC, IID_ICreateDevEnum, reinterpret_cast<void**>(systemDeviceEnum));
+	if (FAILED(hr)) throw HResultException(hr);
+}
+
+inline void CreateFilterMapper(IFilterMapper2** systemDeviceEnum)
+{
+	HRESULT hr = CoCreateInstance(CLSID_FilterMapper2, nullptr, CLSCTX_INPROC, IID_IFilterMapper2, reinterpret_cast<void**>(systemDeviceEnum));
 	if (FAILED(hr)) throw HResultException(hr);
 }
 

@@ -38,7 +38,7 @@ DebugWindow::DebugWindow()
 		return S_OK;
 	}, dummy);
 	audioMediaTypesBox_ = new combo_box();
-	audioMediaTypesBox_->select().add(bind(&DebugWindow::VideoMediaTypeUpdateCallback, this, placeholders::_1, placeholders::_2), dummy);
+	audioMediaTypesBox_->select().add(bind(&DebugWindow::AudioMediaTypeUpdateCallback, this, placeholders::_1, placeholders::_2), dummy);
 	startButton_ = new button(L"Preview");
 	startButton_->click().add(bind(&DebugWindow::StartClickCallback, this, placeholders::_1, placeholders::_2), dummy);
 	auto settings = new grid(
@@ -118,8 +118,14 @@ HRESULT DebugWindow::VideoMediaTypeUpdateCallback(::mnfx::combo_box_base const& 
 	auto fps = fpsBuf[0].to_integer<int16_t>();
 	ctx_.SetFramerate(fps);
 
-	wchar_t fourcc[5] = { 0 };
-	memcpy(fourcc, st[3].to_string().c_str(), 4);
+	auto fourccText = st[3].to_string();
+	auto fourccBuf = Split(fourccText, L' ');
+	if (fourccBuf.size() != 1) return E_FAIL;
+	auto fourccStr = fourccBuf[0].to_string();
+	char fourcc[5] = { 0 };
+	size_t count = 0;
+	wcstombs_s(&count, fourcc, fourccStr.c_str(), 5);
+	ctx_.SetFourCC(fourcc);
 
 	if (st.size() == 5)
 	{
@@ -140,6 +146,26 @@ HRESULT DebugWindow::VideoMediaTypeUpdateCallback(::mnfx::combo_box_base const& 
 
 HRESULT DebugWindow::AudioMediaTypeUpdateCallback(::mnfx::combo_box_base const& sender, value_change_event_args<wstring> args) noexcept
 {
+	auto st = Split(args.new_value);
+	if (st.size() != 3) return E_FAIL;
+
+	auto channelText = st[0].to_string();
+	auto channelBuf = Split(channelText, L' ');
+	if (channelBuf.size() != 3) return E_FAIL;
+	auto channel = channelBuf[1].to_integer<int16_t>();
+	ctx_.SetChannel(channel);
+
+	auto sampleRateText = st[1].to_string();
+	auto sampleRateBuf = Split(sampleRateText, L' ');
+	if (sampleRateBuf.size() != 2) return E_FAIL;
+	auto sampleRate = sampleRateBuf[0].to_integer<int32_t>();
+	ctx_.SetSampleRate(sampleRate);
+
+	auto bitText = st[2].to_string();
+	auto bitBuf = Split(bitText, L' ');
+	if (bitBuf.size() != 2) return E_FAIL;
+	auto bit = bitBuf[0].to_integer<int16_t>();
+	ctx_.SetAudioBit(bit);
 	return S_OK;
 }
 
@@ -193,7 +219,7 @@ HRESULT DebugWindow::VideoMediaTypeChangeCallback(AppContext const& sender, even
 					<< vi.bmiHeader.biWidth << L'x' << vi.bmiHeader.biHeight << L", "
 					<< vi.bmiHeader.biBitCount << L" bit, "
 					<< (10000000.0 / static_cast<float>(vi.AvgTimePerFrame)) << L" fps, "
-					<< mt.GetFourCC();
+					<< mt.GetFourCC().c_str();
 			}
 			else if (mt.IsVideoInfoHeader2())
 			{
@@ -202,7 +228,7 @@ HRESULT DebugWindow::VideoMediaTypeChangeCallback(AppContext const& sender, even
 					<< vi.bmiHeader.biWidth << L'x' << vi.bmiHeader.biHeight << L", "
 					<< vi.bmiHeader.biBitCount << L" bit, "
 					<< (10000000.0 / static_cast<float>(vi.AvgTimePerFrame)) << L" fps, "
-					<< mt.GetFourCC() << L", "
+					<< mt.GetFourCC().c_str() << L", "
 					<< vi.dwPictAspectRatioX << L':' << vi.dwPictAspectRatioY;
 			}
 		}
