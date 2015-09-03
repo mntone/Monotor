@@ -33,8 +33,7 @@ HRESULT AudioMixDownFilter::GetInputPreferredMediaType(ULONG position, AM_MEDIA_
 
 	// 5.1 ch only
 	if (position == 0) return CreatePcmAudioType(6, 48000, 16, mediaType);
-	if (position == 1) return CreatePcmAudioType(6, 48000, 24, mediaType);
-	if (position == 2) return CreatePcmAudioType(6, 48000, 32, mediaType);
+	if (position == 1) return CreatePcmAudioType(6, 48000, 32, mediaType);
 	return VFW_S_NO_MORE_ITEMS;
 }
 
@@ -45,7 +44,7 @@ HRESULT AudioMixDownFilter::SetInputPinMediaType(AM_MEDIA_TYPE const* mediaType)
 	mt.Set(*mediaType);
 	assert(mt.IsPcmAudio());
 	inputBit_ = mt.AsWaveFormatEx().wBitsPerSample;
-	assert(inputBit_ == 16 || inputBit_ == 24 || inputBit_ == 32);
+	assert(inputBit_ == 16 || inputBit_ == 32);
 	return S_OK;
 }
 
@@ -87,13 +86,6 @@ HRESULT AudioMixDownFilter::GetOutputPreferredMediaType(ULONG position, AM_MEDIA
 		if (position == 4) return CreatePcmAudioType(2, 48000, 16, mediaType);
 		if (position == 5) return CreatePcmAudioType(1, 48000, 16, mediaType);
 	}
-	else if (wav.wBitsPerSample == 24)
-	{
-		if (position == 0) return CreatePcmAudioType(2, 48000, 24, mediaType);
-		if (position == 1) return CreatePcmAudioType(1, 48000, 24, mediaType);
-		if (position == 2) return CreatePcmAudioType(2, 48000, 16, mediaType);
-		if (position == 3) return CreatePcmAudioType(1, 48000, 16, mediaType);
-	}
 	else if (wav.wBitsPerSample == 16)
 	{
 		if (position == 0) return CreatePcmAudioType(2, 48000, 16, mediaType);
@@ -110,8 +102,7 @@ HRESULT AudioMixDownFilter::SetOutputPinMediaType(AM_MEDIA_TYPE const* mediaType
 	assert(mt.IsPcmAudio());
 	outputBit_ = mt.AsWaveFormatEx().wBitsPerSample;
 	assert(inputBit_ == 16 && outputBit_ == 16
-		   || inputBit_ == 24 && (outputBit_ == 16 || outputBit_ == 24)
-		   || inputBit_ == 32 && (outputBit_ == 16 || outputBit_ == 24 || outputBit_ == 32));
+		   || inputBit_ == 32 && (outputBit_ == 16 || outputBit_ == 32));
 	outputChannel_ = mt.AsWaveFormatEx().nChannels;
 	assert(outputChannel_ == 2 || outputChannel_ == 1);
 	return S_OK;
@@ -131,7 +122,7 @@ HRESULT AudioMixDownFilter::DecideBufferSize(IMemAllocator* memAllocator, ALLOCA
 
 	// calc buffer
 	properties->cBuffers = inputPinProperties.cBuffers;
-	properties->cbBuffer = 2 * 48000 * (16 / 8);
+	properties->cbBuffer = outputChannel_ * 48000 * (outputBit_ / 8);
 
 	lock_guard<recursive_mutex> lock(mutex_);
 
@@ -155,7 +146,7 @@ HRESULT AudioMixDownFilter::CheckMediaType(AM_MEDIA_TYPE const* inputPinMediaTyp
 	auto const& inWav = inputPinMediaType2.AsWaveFormatEx();
 	if (inWav.nChannels != 6
 		|| inWav.nSamplesPerSec != 48000
-		|| (inWav.wBitsPerSample != 16 && inWav.wBitsPerSample != 24 && inWav.wBitsPerSample != 32))
+		|| (inWav.wBitsPerSample != 16 && inWav.wBitsPerSample != 32))
 	{
 		return S_FALSE;
 	}
@@ -172,8 +163,7 @@ HRESULT AudioMixDownFilter::CheckMediaType(AM_MEDIA_TYPE const* inputPinMediaTyp
 	if ((outWav.nChannels != 2 && outWav.nChannels != 1)
 		|| outWav.nSamplesPerSec != 48000
 		|| (inWav.wBitsPerSample == 16 && outWav.wBitsPerSample != 16)
-		|| (inWav.wBitsPerSample == 24 && outWav.wBitsPerSample != 16 && outWav.wBitsPerSample != 24)
-		|| (inWav.wBitsPerSample == 32 && outWav.wBitsPerSample != 16 && outWav.wBitsPerSample != 24 && outWav.wBitsPerSample != 32))
+		|| (inWav.wBitsPerSample == 32 && outWav.wBitsPerSample != 16 && outWav.wBitsPerSample != 32))
 	{
 		return S_FALSE;
 	}
@@ -183,7 +173,7 @@ HRESULT AudioMixDownFilter::CheckMediaType(AM_MEDIA_TYPE const* inputPinMediaTyp
 HRESULT AudioMixDownFilter::TransformOverride(BYTE* src, int32_t srcSize, BYTE* dst, int32_t* dstSize)
 {
 	PrintDebugLog(L"Start");
-	auto buffer = srcSize / (6 * (16 / 8));
+	auto buffer = srcSize / (6 * (inputBit_ / 8));
 
 	void const* src2 = reinterpret_cast<int16_t*>(src);
 	void* dst2 = reinterpret_cast<int16_t*>(dst);
@@ -191,6 +181,6 @@ HRESULT AudioMixDownFilter::TransformOverride(BYTE* src, int32_t srcSize, BYTE* 
 	{
 		converter_(src2, dst2);
 	}
-	*dstSize = srcSize / 6 * 2;
+	*dstSize = srcSize / 6 * (outputBit_ / 8);
 	return S_OK;
 }

@@ -1,8 +1,6 @@
 #include "pch.hpp"
 #include "AudioMixDownConverter.hpp"
 
-#include "int24_t.hpp"
-
 using namespace std;
 
 constexpr double Pow(double b, int64_t e)
@@ -85,95 +83,6 @@ void Transform5chTo<int16_t, int16_t, 2>(void const*& src, void*& dst)
 	d += 2;
 }
 
-
-template<>
-void Transform5chTo<int24_t, int16_t, 1>(void const*& src, void*& dst)
-{
-	int24_t const*& s = *reinterpret_cast<int24_t const**>(&src);
-	int16_t*& d = *reinterpret_cast<int16_t**>(&dst);
-
-	constexpr int32_t shift = 7;
-	constexpr double sh = Pow(2, shift);
-	constexpr double a = sh / Sqrt(2.0);
-	constexpr double k = sh / (1.0 + 1.0 / Sqrt(2.0) + a);
-	constexpr int32_t ai = static_cast<int32_t>(a);
-	constexpr int32_t ki = static_cast<int32_t>(k);
-
-	int32_t c = 0;
-	Transform5chTo1ch<int32_t>(ai, ki, shift, s[0], s[1], s[3], s[4], s[5], &c);
-	d[0] = static_cast<int16_t>(c);
-
-	s += 6;
-	d += 1;
-}
-
-template<>
-void Transform5chTo<int24_t, int16_t, 2>(void const*& src, void*& dst)
-{
-	int24_t const*& s = *reinterpret_cast<int24_t const**>(&src);
-	int16_t*& d = *reinterpret_cast<int16_t**>(&dst);
-
-	constexpr int32_t shift = 7;
-	constexpr double sh = Pow(2, shift);
-	constexpr double a = sh / Sqrt(2.0);
-	constexpr double k = sh / (1.0 + 1.0 / Sqrt(2.0) + a);
-	constexpr int32_t ai = static_cast<int32_t>(a);
-	constexpr int32_t ki = static_cast<int32_t>(k);
-
-	int32_t l = 0, r = 0;
-	Transform5chTo2ch<int32_t>(ai, ki, shift, sh, s[0], s[1], s[3], s[4], s[5], &l, &r);
-	d[0] = static_cast<int16_t>(l);
-	d[1] = static_cast<int16_t>(r);
-
-	s += 6;
-	d += 2;
-}
-
-
-template<>
-void Transform5chTo<int24_t, int24_t, 1>(void const*& src, void*& dst)
-{
-	int24_t const*& s = *reinterpret_cast<int24_t const**>(&src);
-	int24_t*& d = *reinterpret_cast<int24_t**>(&dst);
-
-	constexpr int32_t shift = 7;
-	constexpr double sh = Pow(2, shift);
-	constexpr double a = sh / Sqrt(2.0);
-	constexpr double k = sh / (1.0 + 1.0 / Sqrt(2.0) + a);
-	constexpr int32_t ai = static_cast<int32_t>(a);
-	constexpr int32_t ki = static_cast<int32_t>(k);
-
-	int32_t c = 0;
-	Transform5chTo1ch<int32_t>(ai, ki, shift, s[0], s[1], s[3], s[4], s[5], &c);
-	d[0] = static_cast<int24_t>(c);
-
-	s += 6;
-	d += 1;
-}
-
-template<>
-void Transform5chTo<int24_t, int24_t, 2>(void const*& src, void*& dst)
-{
-	int24_t const*& s = *reinterpret_cast<int24_t const**>(&src);
-	int24_t*& d = *reinterpret_cast<int24_t**>(&dst);
-
-	constexpr int32_t shift = 7;
-	constexpr double sh = Pow(2, shift);
-	constexpr double a = sh / Sqrt(2.0);
-	constexpr double k = sh / (1.0 + 1.0 / Sqrt(2.0) + a);
-	constexpr int32_t ai = static_cast<int32_t>(a);
-	constexpr int32_t ki = static_cast<int32_t>(k);
-
-	int32_t l = 0, r = 0;
-	Transform5chTo2ch<int32_t>(ai, ki, shift, sh, s[0], s[1], s[3], s[4], s[5], &l, &r);
-	d[0] = static_cast<int24_t>(l);
-	d[1] = static_cast<int24_t>(r);
-
-	s += 6;
-	d += 2;
-}
-
-
 template<>
 void Transform5chTo<int32_t, int16_t, 1>(void const*& src, void*& dst)
 {
@@ -216,51 +125,6 @@ void Transform5chTo<int32_t, int16_t, 2>(void const*& src, void*& dst)
 	s += 6;
 	d += 2;
 }
-
-
-template<>
-void Transform5chTo<int32_t, int24_t, 1>(void const*& src, void*& dst)
-{
-	int32_t const*& s = *reinterpret_cast<int32_t const**>(&src);
-	int24_t*& d = *reinterpret_cast<int24_t**>(&dst);
-
-	constexpr int64_t shift = 14;
-	constexpr double sh = Pow(2, shift);
-	constexpr double a = sh / Sqrt(2.0);
-	constexpr double k = sh / (1.0 + 1.0 / Sqrt(2.0) + a);
-	constexpr int64_t ai = static_cast<int64_t>(a);
-	constexpr int64_t ki = static_cast<int64_t>(k);
-
-	int64_t c = 0;
-	Transform5chTo1ch<int64_t>(ai, ki, shift, s[0], s[1], s[3], s[4], s[5], &c);
-	d[0] = static_cast<int24_t>(c);
-
-	s += 6;
-	d += 1;
-}
-
-template<>
-void Transform5chTo<int32_t, int24_t, 2>(void const*& src, void*& dst)
-{
-	int32_t const*& s = *reinterpret_cast<int32_t const**>(&src);
-	int24_t*& d = *reinterpret_cast<int24_t**>(&dst);
-
-	constexpr int64_t shift = 14;
-	constexpr double sh = Pow(2, shift);
-	constexpr double a = sh / Sqrt(2.0);
-	constexpr double k = sh / (1.0 + 1.0 / Sqrt(2.0) + a);
-	constexpr int64_t ai = static_cast<int64_t>(a);
-	constexpr int64_t ki = static_cast<int64_t>(k);
-
-	int64_t l = 0, r = 0;
-	Transform5chTo2ch<int64_t>(ai, ki, shift, sh, s[0], s[1], s[3], s[4], s[5], &l, &r);
-	d[0] = static_cast<int24_t>(l);
-	d[1] = static_cast<int24_t>(r);
-
-	s += 6;
-	d += 2;
-}
-
 
 template<>
 void Transform5chTo<int32_t, int32_t, 1>(void const*& src, void*& dst)
@@ -316,19 +180,10 @@ function<void(void const*&, void*&)> AudioMixDownConverter::GetTransform5chFunct
 		}
 		break;
 
-	case 24:
-		switch (dstBit)
-		{
-		case 16: return dstChannel == 2 ? Transform5chTo<int24_t, int16_t, 2> : Transform5chTo<int24_t, int16_t, 1>;
-		case 24: return dstChannel == 2 ? Transform5chTo<int24_t, int24_t, 2> : Transform5chTo<int24_t, int24_t, 1>;
-		}
-		break;
-
 	case 32:
 		switch (dstBit)
 		{
 		case 16: return dstChannel == 2 ? Transform5chTo<int32_t, int16_t, 2> : Transform5chTo<int32_t, int16_t, 1>;
-		case 24: return dstChannel == 2 ? Transform5chTo<int32_t, int24_t, 2> : Transform5chTo<int32_t, int24_t, 1>;
 		case 32: return dstChannel == 2 ? Transform5chTo<int32_t, int32_t, 2> : Transform5chTo<int32_t, int32_t, 1>;
 		}
 		break;
