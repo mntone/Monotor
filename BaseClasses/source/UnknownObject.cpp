@@ -7,7 +7,7 @@ UnknownObject::UnknownObject()
 
 HRESULT UnknownObject::QueryInterfaceOverride(IID const& iid, void** ret)
 {
-	PrintDebugLog((L"iid: " + GetClsidString(iid)).c_str());
+	PrintDebugLog((L"iid: " + GetGuidString(iid)).c_str());
 	if (iid == IID_IUnknown)
 	{
 		AddRefInternal();
@@ -42,7 +42,7 @@ DelegateUnknownObject::DelegateUnknownObject(IUnknown* const target)
 
 HRESULT DelegateUnknownObject::QueryInterfaceOverride(IID const& iid, void** ret)
 {
-	PrintDebugLog((L"iid: " + GetClsidString(iid)).c_str());
+	PrintDebugLog((L"iid: " + GetGuidString(iid)).c_str());
 	if (iid == IID_IUnknown)
 	{
 		*ret = reinterpret_cast<IUnknown*>(static_cast<IFalseUnknown*>(this));

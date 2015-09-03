@@ -142,6 +142,9 @@
     <ClCompile Include="source\AudioMixDownConverter.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="..\BaseClasses\source\ExtendedGuid.cpp">
+      <Filter>Source Files\BaseClasses</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Midl Include="..\BaseClasses\include\DirectShowEx.idl">

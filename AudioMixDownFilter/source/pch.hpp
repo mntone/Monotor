@@ -17,5 +17,6 @@
 #include <windows.h>
 #include <wrl\client.h>
 #include <dshow.h>
+#include <dvdmedia.h>
 
 #include "Utilties.hpp"

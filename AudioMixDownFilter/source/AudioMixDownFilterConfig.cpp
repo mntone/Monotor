@@ -14,7 +14,7 @@ constexpr REGPINTYPES regPinTypes[] =
 	},
 };
 
-constexpr REGFILTERPINS2 registrationPin[] =
+const REGFILTERPINS2 registrationPin[] =
 {
 	{
 		0,

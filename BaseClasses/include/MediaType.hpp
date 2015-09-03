@@ -55,7 +55,7 @@ public:
 
 	::std::wstring SubTypeAsString() const noexcept;
 
-	::std::wstring GetFourCC() const noexcept;
+	::std::string GetFourCC() const noexcept;
 
 	static HRESULT CreateInstance(_Out_ MediaType** ret) noexcept;
 
@@ -70,6 +70,7 @@ extern "C" {
 	HRESULT _stdcall CreateMjpegVideoType2(_Outptr_opt_ AM_MEDIA_TYPE* mediaType);
 	HRESULT _stdcall CreateRgbVideoType(_In_ WORD height, _In_ WORD width, _In_ WORD bits, _In_ float framerate, _Outptr_opt_ AM_MEDIA_TYPE* mediaType);
 	HRESULT _stdcall CreateRgbVideoType2(_Outptr_opt_ AM_MEDIA_TYPE* mediaType);
+	HRESULT _stdcall CreateYuvVideoType(_In_ WORD height, _In_ WORD width, _In_ float framerate, _In_ char* fourcc, _Outptr_opt_ AM_MEDIA_TYPE* mediaType);
 	HRESULT _stdcall CreatePcmAudioType(_In_ WORD channel, _In_ DWORD sampleRate, _In_ WORD bits, _Outptr_opt_ AM_MEDIA_TYPE* mediaType);
 	HRESULT _stdcall CopyMediaType(_In_ AM_MEDIA_TYPE const& source, _Out_ AM_MEDIA_TYPE& target);
 	void _stdcall DeleteMediaType(_Inout_ AM_MEDIA_TYPE& mediaType);

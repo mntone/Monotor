@@ -130,6 +130,7 @@
     <ClCompile Include="..\BaseClasses\source\DllSetup.cpp" />
     <ClCompile Include="..\BaseClasses\source\EnumMediaTypes.cpp" />
     <ClCompile Include="..\BaseClasses\source\EnumPins.cpp" />
+    <ClCompile Include="..\BaseClasses\source\ExtendedGuid.cpp" />
     <ClCompile Include="..\BaseClasses\source\MediaType.cpp" />
     <ClCompile Include="..\BaseClasses\source\RegistoryLibrary.cpp" />
     <ClCompile Include="..\BaseClasses\source\TransformFilter.cpp" />

@@ -1,5 +1,6 @@
 #include "pch.hpp"
 #include "MediaType.hpp"
+#include "ExtendedGuid.hpp"
 
 MediaType::MediaType()
 {
@@ -125,7 +126,7 @@ bool MediaType::MatchesPartial(AM_MEDIA_TYPE const& otherMediaType) const noexce
 	return L"Unknown";
 }
 
-::std::wstring MediaType::GetFourCC() const noexcept
+::std::string MediaType::GetFourCC() const noexcept
 {
 	char fourcc[5] = { 0 };
 	if (IsVideoInfoHeader())
@@ -153,10 +154,7 @@ bool MediaType::MatchesPartial(AM_MEDIA_TYPE const& otherMediaType) const noexce
 		}
 	}
 
-	wchar_t fourccw[5];
-	size_t s = 0;
-	mbstowcs_s(&s, fourccw, fourcc, 5);
-	return fourccw;
+	return fourcc;
 }
 
 HRESULT MediaType::CreateInstance(MediaType** ret) noexcept
@@ -217,6 +215,7 @@ extern "C" {
 		vi.bmiHeader.biYPelsPerMeter = 0;
 		vi.bmiHeader.biClrUsed = 0;
 		vi.bmiHeader.biClrImportant = 0;
+		return S_OK;
 	}
 
 	HRESULT _stdcall CreateRgbVideoType(WORD height, WORD width, WORD bits, float framerate, _Outptr_opt_ AM_MEDIA_TYPE* mediaType)
@@ -228,6 +227,8 @@ extern "C" {
 		mt.majortype = MEDIATYPE_Video;
 		mt.subtype = MEDIASUBTYPE_MJPG;
 		mt.formattype = FORMAT_VideoInfo;
+		mt.lSampleSize = (bits / 8) * height * ((width + 3) & ~3);
+		mt.bFixedSizeSamples = TRUE;
 
 		mt.cbFormat = sizeof(VIDEOINFOHEADER);
 		mt.pbFormat = static_cast<BYTE*>(CoTaskMemAlloc(sizeof(VIDEOINFOHEADER)));
@@ -250,6 +251,69 @@ extern "C" {
 		vi.bmiHeader.biYPelsPerMeter = 0;
 		vi.bmiHeader.biClrUsed = 0;
 		vi.bmiHeader.biClrImportant = 0;
+		return S_OK;
+	}
+
+	HRESULT _stdcall CreateYuvVideoType(WORD height, WORD width, float framerate, _In_ char* fourcc, _Outptr_opt_ AM_MEDIA_TYPE* mediaType)
+	{
+		CheckPointer(mediaType);
+		FreeMediaType(*mediaType);
+
+		GUID subtype;
+		char copiedFourcc[4];
+		WORD bits = 0;
+		if (memcmp(fourcc, "YUY2", 4) == 0)
+		{
+			subtype = MEDIASUBTYPE_YUY2;
+			memcpy(copiedFourcc, fourcc, 4);
+			bits = 16;
+		}
+		else if (memcmp(fourcc, "UYVY", 4) == 0)
+		{
+			subtype = MEDIASUBTYPE_UYVY;
+			memcpy(copiedFourcc, fourcc, 4);
+			bits = 16;
+		}
+		else if (memcmp(fourcc, "HDYC", 4) == 0)
+		{
+			subtype = MEDIASUBTYPE_HDYC;
+			memcpy(copiedFourcc, fourcc, 4);
+			bits = 16;
+		}
+		else
+		{
+			return E_FAIL;
+		}
+
+		auto& mt = *mediaType;
+		mt.majortype = MEDIATYPE_Video;
+		mt.subtype = subtype;
+		mt.formattype = FORMAT_VideoInfo;
+		mt.lSampleSize = (bits / 8) * height * ((width + 3) & ~3);
+		mt.bFixedSizeSamples = TRUE;
+
+		mt.cbFormat = sizeof(VIDEOINFOHEADER);
+		mt.pbFormat = static_cast<BYTE*>(CoTaskMemAlloc(sizeof(VIDEOINFOHEADER)));
+
+		VIDEOINFOHEADER& vi = *reinterpret_cast<VIDEOINFOHEADER*>(mt.pbFormat);
+		vi.rcSource = { 0, 0, 0, 0 };
+		vi.rcTarget = { 0, 0, 0, 0 };
+		vi.dwBitRate = static_cast<DWORD>(static_cast<float>(bits * height * ((width + 3) & ~3)) * framerate);
+		vi.dwBitErrorRate = 0;
+		vi.AvgTimePerFrame = static_cast<REFERENCE_TIME>(10000000.0 / framerate);
+
+		vi.bmiHeader.biSize = sizeof(BITMAPINFOHEADER);
+		vi.bmiHeader.biWidth = width;
+		vi.bmiHeader.biHeight = height;
+		vi.bmiHeader.biPlanes = 1;
+		vi.bmiHeader.biBitCount = bits;
+		memcpy(&vi.bmiHeader.biCompression, copiedFourcc, 4);
+		vi.bmiHeader.biSizeImage = (bits / 8) * height * ((width + 3) & ~3);
+		vi.bmiHeader.biXPelsPerMeter = 0;
+		vi.bmiHeader.biYPelsPerMeter = 0;
+		vi.bmiHeader.biClrUsed = 0;
+		vi.bmiHeader.biClrImportant = 0;
+		return S_OK;
 	}
 
 	HRESULT _stdcall CreatePcmAudioType(WORD channel, DWORD sampleRate, WORD bits, AM_MEDIA_TYPE* mediaType)
@@ -261,6 +325,8 @@ extern "C" {
 		mt.majortype = MEDIATYPE_Audio;
 		mt.subtype = MEDIASUBTYPE_PCM;
 		mt.formattype = FORMAT_WaveFormatEx;
+		mt.lSampleSize = channel * (bits / 8);
+		mt.bFixedSizeSamples = TRUE;
 
 		mt.cbFormat = sizeof(WAVEFORMATEX);
 		mt.pbFormat = static_cast<BYTE*>(CoTaskMemAlloc(sizeof(WAVEFORMATEX)));
@@ -273,6 +339,7 @@ extern "C" {
 
 		wav.nBlockAlign = channel * (bits / 8);
 		wav.nAvgBytesPerSec = sampleRate * wav.nBlockAlign;
+		wav.cbSize = 0;
 		return S_OK;
 	}
 

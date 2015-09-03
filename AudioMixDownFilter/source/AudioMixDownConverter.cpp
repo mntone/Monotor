@@ -5,6 +5,11 @@
 
 using namespace std;
 
+constexpr double Pow(double b, int64_t e)
+{
+	return e != 1 ? b * Pow(b, e - 1) : b;
+}
+
 template<typename T>
 constexpr T SqrtAux(T s, T x, T prev)
 {
@@ -20,16 +25,16 @@ constexpr T Sqrt(T s)
 template<typename T>
 constexpr void Transform5chTo1ch(T a, T k, T shift, T fl, T fr, T fc, T bl, T br, T* c2)
 {
-	*c2 = (k * (((fl + fc + fr) << shift) + a * (bl + br))) >> (2 * shift);
+	*c2 = (k * (((fl + fc + fr) << shift) + a * (bl + br))) >> shift;
 }
 
 template<typename T>
-void Transform5chTo2ch(T a, T k, T shift, T fl, T fr, T fc, T bl, T br, T* l2, T* r2)
+void Transform5chTo2ch(T a, T k, T shift, double shiftD, T fl, T fr, T fc, T bl, T br, T* l2, T* r2)
 {
-	double os2 = static_cast<double>(1 << shift) / Sqrt(2.0);
+	double os2 = shiftD / Sqrt(2.0);
 	T os2i = static_cast<T>(os2);
-	*l2 = (k * ((fl << shift) + fc * os2i + a * bl)) >> (2 * shift);
-	*r2 = (k * ((fr << shift) + fc * os2i + a * br)) >> (2 * shift);
+	*l2 = (k * ((fl << shift) + fc * os2i + a * bl)) >> shift;
+	*r2 = (k * ((fr << shift) + fc * os2i + a * br)) >> shift;
 }
 
 
@@ -43,9 +48,10 @@ void Transform5chTo<int16_t, int16_t, 1>(void const*& src, void*& dst)
 	int16_t const*& s = *reinterpret_cast<int16_t const**>(&src);
 	int16_t*& d = *reinterpret_cast<int16_t**>(&dst);
 
-	constexpr int32_t shift = 3;
-	constexpr double a = static_cast<double>(1 << shift) / Sqrt(2.0);
-	constexpr double k = static_cast<double>(1 << shift) / (1.0 + 1.0 / Sqrt(2.0) + a);
+	constexpr int32_t shift = 7;
+	constexpr double sh = Pow(2, shift);
+	constexpr double a = sh / Sqrt(2.0);
+	constexpr double k = sh / (1.0 + 1.0 / Sqrt(2.0) + a);
 	constexpr int32_t ai = static_cast<int32_t>(a);
 	constexpr int32_t ki = static_cast<int32_t>(k);
 
@@ -63,14 +69,15 @@ void Transform5chTo<int16_t, int16_t, 2>(void const*& src, void*& dst)
 	int16_t const*& s = *reinterpret_cast<int16_t const**>(&src);
 	int16_t*& d = *reinterpret_cast<int16_t**>(&dst);
 
-	constexpr int32_t shift = 3;
-	constexpr double a = static_cast<double>(1 << shift) / Sqrt(2.0);
-	constexpr double k = static_cast<double>(1 << shift) / (1.0 + 1.0 / Sqrt(2.0) + a);
+	constexpr int32_t shift = 7;
+	constexpr double sh = Pow(2, shift);
+	constexpr double a = sh / Sqrt(2.0);
+	constexpr double k = sh / (1.0 + 1.0 / Sqrt(2.0) + a);
 	constexpr int32_t ai = static_cast<int32_t>(a);
 	constexpr int32_t ki = static_cast<int32_t>(k);
 
 	int32_t l = 0, r = 0;
-	Transform5chTo2ch<int32_t>(ai, ki, shift, s[0], s[1], s[3], s[4], s[5], &l, &r);
+	Transform5chTo2ch<int32_t>(ai, ki, shift, sh, s[0], s[1], s[3], s[4], s[5], &l, &r);
 	d[0] = static_cast<int16_t>(l);
 	d[1] = static_cast<int16_t>(r);
 
@@ -85,14 +92,15 @@ void Transform5chTo<int24_t, int16_t, 1>(void const*& src, void*& dst)
 	int24_t const*& s = *reinterpret_cast<int24_t const**>(&src);
 	int16_t*& d = *reinterpret_cast<int16_t**>(&dst);
 
-	constexpr int32_t shift = 3;
-	constexpr double a = static_cast<double>(1 << shift) / Sqrt(2.0);
-	constexpr double k = static_cast<double>(1 << shift) / (1.0 + 1.0 / Sqrt(2.0) + a);
+	constexpr int32_t shift = 7;
+	constexpr double sh = Pow(2, shift);
+	constexpr double a = sh / Sqrt(2.0);
+	constexpr double k = sh / (1.0 + 1.0 / Sqrt(2.0) + a);
 	constexpr int32_t ai = static_cast<int32_t>(a);
 	constexpr int32_t ki = static_cast<int32_t>(k);
 
 	int32_t c = 0;
-	Transform5chTo1ch<int32_t>(ai, ki, 12, s[0], s[1], s[3], s[4], s[5], &c);
+	Transform5chTo1ch<int32_t>(ai, ki, shift, s[0], s[1], s[3], s[4], s[5], &c);
 	d[0] = static_cast<int16_t>(c);
 
 	s += 6;
@@ -105,14 +113,15 @@ void Transform5chTo<int24_t, int16_t, 2>(void const*& src, void*& dst)
 	int24_t const*& s = *reinterpret_cast<int24_t const**>(&src);
 	int16_t*& d = *reinterpret_cast<int16_t**>(&dst);
 
-	constexpr int32_t shift = 3;
-	constexpr double a = static_cast<double>(1 << shift) / Sqrt(2.0);
-	constexpr double k = static_cast<double>(1 << shift) / (1.0 + 1.0 / Sqrt(2.0) + a);
-	int32_t ai = static_cast<int32_t>(a);
-	int32_t ki = static_cast<int32_t>(k);
+	constexpr int32_t shift = 7;
+	constexpr double sh = Pow(2, shift);
+	constexpr double a = sh / Sqrt(2.0);
+	constexpr double k = sh / (1.0 + 1.0 / Sqrt(2.0) + a);
+	constexpr int32_t ai = static_cast<int32_t>(a);
+	constexpr int32_t ki = static_cast<int32_t>(k);
 
 	int32_t l = 0, r = 0;
-	Transform5chTo2ch<int32_t>(ai, ki, 12, s[0], s[1], s[3], s[4], s[5], &l, &r);
+	Transform5chTo2ch<int32_t>(ai, ki, shift, sh, s[0], s[1], s[3], s[4], s[5], &l, &r);
 	d[0] = static_cast<int16_t>(l);
 	d[1] = static_cast<int16_t>(r);
 
@@ -127,14 +136,15 @@ void Transform5chTo<int24_t, int24_t, 1>(void const*& src, void*& dst)
 	int24_t const*& s = *reinterpret_cast<int24_t const**>(&src);
 	int24_t*& d = *reinterpret_cast<int24_t**>(&dst);
 
-	constexpr int32_t shift = 3;
-	constexpr double a = static_cast<double>(1 << shift) / Sqrt(2.0);
-	constexpr double k = static_cast<double>(1 << shift) / (1.0 + 1.0 / Sqrt(2.0) + a);
-	int32_t ai = static_cast<int32_t>(a);
-	int32_t ki = static_cast<int32_t>(k);
+	constexpr int32_t shift = 7;
+	constexpr double sh = Pow(2, shift);
+	constexpr double a = sh / Sqrt(2.0);
+	constexpr double k = sh / (1.0 + 1.0 / Sqrt(2.0) + a);
+	constexpr int32_t ai = static_cast<int32_t>(a);
+	constexpr int32_t ki = static_cast<int32_t>(k);
 
 	int32_t c = 0;
-	Transform5chTo1ch<int32_t>(ai, ki, 12, s[0], s[1], s[3], s[4], s[5], &c);
+	Transform5chTo1ch<int32_t>(ai, ki, shift, s[0], s[1], s[3], s[4], s[5], &c);
 	d[0] = static_cast<int24_t>(c);
 
 	s += 6;
@@ -147,14 +157,15 @@ void Transform5chTo<int24_t, int24_t, 2>(void const*& src, void*& dst)
 	int24_t const*& s = *reinterpret_cast<int24_t const**>(&src);
 	int24_t*& d = *reinterpret_cast<int24_t**>(&dst);
 
-	constexpr int32_t shift = 3;
-	constexpr double a = static_cast<double>(1 << shift) / Sqrt(2.0);
-	constexpr double k = static_cast<double>(1 << shift) / (1.0 + 1.0 / Sqrt(2.0) + a);
-	int32_t ai = static_cast<int32_t>(a);
-	int32_t ki = static_cast<int32_t>(k);
+	constexpr int32_t shift = 7;
+	constexpr double sh = Pow(2, shift);
+	constexpr double a = sh / Sqrt(2.0);
+	constexpr double k = sh / (1.0 + 1.0 / Sqrt(2.0) + a);
+	constexpr int32_t ai = static_cast<int32_t>(a);
+	constexpr int32_t ki = static_cast<int32_t>(k);
 
 	int32_t l = 0, r = 0;
-	Transform5chTo2ch<int32_t>(ai, ki, 12, s[0], s[1], s[3], s[4], s[5], &l, &r);
+	Transform5chTo2ch<int32_t>(ai, ki, shift, sh, s[0], s[1], s[3], s[4], s[5], &l, &r);
 	d[0] = static_cast<int24_t>(l);
 	d[1] = static_cast<int24_t>(r);
 
@@ -169,14 +180,15 @@ void Transform5chTo<int32_t, int16_t, 1>(void const*& src, void*& dst)
 	int32_t const*& s = *reinterpret_cast<int32_t const**>(&src);
 	int16_t*& d = *reinterpret_cast<int16_t**>(&dst);
 
-	constexpr int64_t shift = 7;
-	constexpr double a = static_cast<double>(1 << shift) / Sqrt(2.0);
-	constexpr double k = static_cast<double>(1 << shift) / (1.0 + 1.0 / Sqrt(2.0) + a);
-	int64_t ai = static_cast<int64_t>(a);
-	int64_t ki = static_cast<int64_t>(k);
+	constexpr int64_t shift = 14;
+	constexpr double sh = Pow(2, shift);
+	constexpr double a = sh / Sqrt(2.0);
+	constexpr double k = sh / (1.0 + 1.0 / Sqrt(2.0) + a);
+	constexpr int64_t ai = static_cast<int64_t>(a);
+	constexpr int64_t ki = static_cast<int64_t>(k);
 
 	int64_t c = 0;
-	Transform5chTo1ch<int64_t>(ai, ki, 12, s[0], s[1], s[3], s[4], s[5], &c);
+	Transform5chTo1ch<int64_t>(ai, ki, shift, s[0], s[1], s[3], s[4], s[5], &c);
 	d[0] = static_cast<int16_t>(c);
 
 	s += 6;
@@ -189,14 +201,15 @@ void Transform5chTo<int32_t, int16_t, 2>(void const*& src, void*& dst)
 	int32_t const*& s = *reinterpret_cast<int32_t const**>(&src);
 	int16_t*& d = *reinterpret_cast<int16_t**>(&dst);
 
-	constexpr int64_t shift = 7;
-	constexpr double a = static_cast<double>(1 << shift) / Sqrt(2.0);
-	constexpr double k = static_cast<double>(1 << shift) / (1.0 + 1.0 / Sqrt(2.0) + a);
-	int64_t ai = static_cast<int64_t>(a);
-	int64_t ki = static_cast<int64_t>(k);
+	constexpr int64_t shift = 14;
+	constexpr double sh = Pow(2, shift);
+	constexpr double a = sh / Sqrt(2.0);
+	constexpr double k = sh / (1.0 + 1.0 / Sqrt(2.0) + a);
+	constexpr int64_t ai = static_cast<int64_t>(a);
+	constexpr int64_t ki = static_cast<int64_t>(k);
 
 	int64_t l = 0, r = 0;
-	Transform5chTo2ch<int64_t>(ai, ki, 12, s[0], s[1], s[3], s[4], s[5], &l, &r);
+	Transform5chTo2ch<int64_t>(ai, ki, shift, sh, s[0], s[1], s[3], s[4], s[5], &l, &r);
 	d[0] = static_cast<int16_t>(l);
 	d[1] = static_cast<int16_t>(r);
 
@@ -211,14 +224,15 @@ void Transform5chTo<int32_t, int24_t, 1>(void const*& src, void*& dst)
 	int32_t const*& s = *reinterpret_cast<int32_t const**>(&src);
 	int24_t*& d = *reinterpret_cast<int24_t**>(&dst);
 
-	constexpr int64_t shift = 7;
-	constexpr double a = static_cast<double>(1 << shift) / Sqrt(2.0);
-	constexpr double k = static_cast<double>(1 << shift) / (1.0 + 1.0 / Sqrt(2.0) + a);
-	int64_t ai = static_cast<int64_t>(a);
-	int64_t ki = static_cast<int64_t>(k);
+	constexpr int64_t shift = 14;
+	constexpr double sh = Pow(2, shift);
+	constexpr double a = sh / Sqrt(2.0);
+	constexpr double k = sh / (1.0 + 1.0 / Sqrt(2.0) + a);
+	constexpr int64_t ai = static_cast<int64_t>(a);
+	constexpr int64_t ki = static_cast<int64_t>(k);
 
 	int64_t c = 0;
-	Transform5chTo1ch<int64_t>(ai, ki, 12, s[0], s[1], s[3], s[4], s[5], &c);
+	Transform5chTo1ch<int64_t>(ai, ki, shift, s[0], s[1], s[3], s[4], s[5], &c);
 	d[0] = static_cast<int24_t>(c);
 
 	s += 6;
@@ -231,14 +245,15 @@ void Transform5chTo<int32_t, int24_t, 2>(void const*& src, void*& dst)
 	int32_t const*& s = *reinterpret_cast<int32_t const**>(&src);
 	int24_t*& d = *reinterpret_cast<int24_t**>(&dst);
 
-	constexpr int64_t shift = 7;
-	constexpr double a = static_cast<double>(1 << shift) / Sqrt(2.0);
-	constexpr double k = static_cast<double>(1 << shift) / (1.0 + 1.0 / Sqrt(2.0) + a);
-	int64_t ai = static_cast<int64_t>(a);
-	int64_t ki = static_cast<int64_t>(k);
+	constexpr int64_t shift = 14;
+	constexpr double sh = Pow(2, shift);
+	constexpr double a = sh / Sqrt(2.0);
+	constexpr double k = sh / (1.0 + 1.0 / Sqrt(2.0) + a);
+	constexpr int64_t ai = static_cast<int64_t>(a);
+	constexpr int64_t ki = static_cast<int64_t>(k);
 
 	int64_t l = 0, r = 0;
-	Transform5chTo2ch<int64_t>(ai, ki, 12, s[0], s[1], s[3], s[4], s[5], &l, &r);
+	Transform5chTo2ch<int64_t>(ai, ki, shift, sh, s[0], s[1], s[3], s[4], s[5], &l, &r);
 	d[0] = static_cast<int24_t>(l);
 	d[1] = static_cast<int24_t>(r);
 
@@ -253,14 +268,15 @@ void Transform5chTo<int32_t, int32_t, 1>(void const*& src, void*& dst)
 	int32_t const*& s = *reinterpret_cast<int32_t const**>(&src);
 	int32_t*& d = *reinterpret_cast<int32_t**>(&dst);
 
-	constexpr int64_t shift = 7;
-	constexpr double a = static_cast<double>(1 << shift) / Sqrt(2.0);
-	constexpr double k = static_cast<double>(1 << shift) / (1.0 + 1.0 / Sqrt(2.0) + a);
-	int64_t ai = static_cast<int64_t>(a);
-	int64_t ki = static_cast<int64_t>(k);
+	constexpr int64_t shift = 14;
+	constexpr double sh = Pow(2, shift);
+	constexpr double a = sh / Sqrt(2.0);
+	constexpr double k = sh / (1.0 + 1.0 / Sqrt(2.0) + a);
+	constexpr int64_t ai = static_cast<int64_t>(a);
+	constexpr int64_t ki = static_cast<int64_t>(k);
 
 	int64_t c = 0;
-	Transform5chTo1ch<int64_t>(ai, ki, 12, s[0], s[1], s[3], s[4], s[5], &c);
+	Transform5chTo1ch<int64_t>(ai, ki, shift, s[0], s[1], s[3], s[4], s[5], &c);
 	d[0] = static_cast<int32_t>(c);
 
 	s += 6;
@@ -273,14 +289,15 @@ void Transform5chTo<int32_t, int32_t, 2>(void const*& src, void*& dst)
 	int32_t const*& s = *reinterpret_cast<int32_t const**>(&src);
 	int32_t*& d = *reinterpret_cast<int32_t**>(&dst);
 
-	constexpr int64_t shift = 7;
-	constexpr double a = static_cast<double>(1 << shift) / Sqrt(2.0);
-	constexpr double k = static_cast<double>(1 << shift) / (1.0 + 1.0 / Sqrt(2.0) + a);
-	int64_t ai = static_cast<int64_t>(a);
-	int64_t ki = static_cast<int64_t>(k);
+	constexpr int64_t shift = 14;
+	constexpr double sh = Pow(2, shift);
+	constexpr double a = sh / Sqrt(2.0);
+	constexpr double k = sh / (1.0 + 1.0 / Sqrt(2.0) + a);
+	constexpr int64_t ai = static_cast<int64_t>(a);
+	constexpr int64_t ki = static_cast<int64_t>(k);
 
 	int64_t l = 0, r = 0;
-	Transform5chTo2ch<int64_t>(ai, ki, 12, s[0], s[1], s[3], s[4], s[5], &l, &r);
+	Transform5chTo2ch<int64_t>(ai, ki, shift, sh, s[0], s[1], s[3], s[4], s[5], &l, &r);
 	d[0] = static_cast<int32_t>(l);
 	d[1] = static_cast<int32_t>(r);
 

@@ -57,7 +57,7 @@ protected:
 #define DECLARE_IUNKNOWN \
 virtual HRESULT _stdcall QueryInterface(_In_ IID const& iid, _COM_Outptr_ void** ret) override \
 { \
-	PrintDebugLog((L"iid: " + GetClsidString(iid)).c_str()); \
+	PrintDebugLog((L"iid: " + GetGuidString(iid)).c_str()); \
 	return QueryInterfaceOverride(iid, ret); \
 } \
 virtual ULONG _stdcall AddRef() override \
